@@ -27,6 +27,13 @@ class LockConflictScene(RcaScene):
 
     def init(self, context):
         try:
+            if self.input_parameters is not None: 
+                tenant_name = self.input_parameters.get("tenant_name")
+                tenant_data = self.ob_connector.execute_sql("select tenant_id from oceanbase.__all_tenant where tenant_name = '{0}';".format(tenant_name))
+                if len(tenant_data) == 0:
+                    raise RCAInitException("can not find tenant id by tenant name: {0}. Please check the tenant name.".format(tenant_name))
+                self.tenant_id = tenant_data[0][0]
+                self.verbose("tenant_id is {0}".format(self.tenant_id))
             super().init(context)
             self.local_path = context.get_variable("store_dir")
             if self.observer_version is None or len(self.observer_version.strip()) == 0 or self.observer_version == "":
@@ -83,7 +90,7 @@ class LockConflictScene(RcaScene):
                     wait_lock_trans_id = OB_LOCKS_data["TRANS_ID"]
                     trans_record.add_record("wait_lock_trans_id is {0}".format(wait_lock_trans_id))
                     cursor_by_trans_id = self.ob_connector.execute_sql_return_cursor_dictionary('select * from oceanbase.GV$OB_TRANSACTION_PARTICIPANTS where TX_ID="{0}";'.format(wait_lock_trans_id))
-
+                    
                     wait_lock_session_datas = cursor_by_trans_id.fetchall()
                     self.stdio.verbose("get sql_info by holding_lock_session_id:{0}".format(holding_lock_session_id))
                     wait_lock_session_id = "not get"
