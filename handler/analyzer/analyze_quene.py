@@ -350,7 +350,7 @@ class AnalyzeQueneHandler(BaseShellHandler):
 
         ssh_client = ssh_client_local_client.LocalClient(context=self.context, node={"ssh_type": "local"})
         local_store_path = "{0}/{1}".format(local_store_dir, str(log_name).strip(".").replace("/", "_"))
-        grep_cmd = "grep -e 'dump tenant info(tenant={id:{tenant_id},' {log_dir}/{log_name} >> {gather_path}/{log_name} ".format(tenant_id=self.tenant_id, gather_path=gather_path, log_name=log_name, log_dir=log_path)
+        # grep_cmd = "grep -e 'dump tenant info(tenant={id:{tenant_id},' {log_dir}/{log_name} >> {gather_path}/{log_name} ".format(tenant_id=self.tenant_id, gather_path=gather_path, log_name=log_name, log_dir=log_path)
         grep_cmd = "grep -e 'dump tenant info(tenant={id:{tenant_id},' {log_name} >> {local_store_path} ".format(tenant_id=self.tenant_id, log_name=log_name, local_store_path=local_store_path)
         self.stdio.verbose("grep files, run cmd = [{0}]".format(grep_cmd))
         ssh_client.exec_cmd(grep_cmd)
