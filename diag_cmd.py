@@ -660,6 +660,32 @@ class ObdiagAnalyzeLogCommand(ObdiagOriginCommand):
             return obdiag.analyze_fuction('analyze_log', self.opts)
 
 
+class ObdiagAnalyzeQueneCommand(ObdiagOriginCommand):
+
+    def __init__(self):
+        super(ObdiagAnalyzeQueneCommand, self).__init__('quenue', 'Analyze oceanbase log from online observer machines to registration quenue')
+        self.parser.add_option('--from', type='string', help="specify the start of the time range. format: 'yyyy-mm-dd hh:mm:ss'")
+        self.parser.add_option('--to', type='string', help="specify the end of the time range. format: 'yyyy-mm-dd hh:mm:ss'")
+        self.parser.add_option('--files', action="append", type='string', help="specify files")
+        self.parser.add_option('--store_dir', type='string', help='the dir to store gather result, current dir by default.', default='./')
+        self.parser.add_option('-c', type='string', help='obdiag custom config', default=os.path.expanduser('~/.obdiag/config.yml'))
+        self.parser.add_option('--since', type='string', help="Specify time range that from 'n' [d]ays, 'n' [h]ours or 'n' [m]inutes. before to now. format: <n> <m|h|d>. example: 1h.", default='30m')
+        self.parser.add_option('--tenant', type='string', help="Specify tenantname ")
+        self.parser.add_option('--quenue', type='int', help="quene size ", default=50)
+
+    def init(self, cmd, args):
+        super(ObdiagAnalyzeQueneCommand, self).init(cmd, args)
+        self.parser.set_usage('%s [options]' % self.prev_cmd)
+        return self
+
+    def _do_command(self, obdiag):
+        offline_args_sign = '--files'
+        if self.args and (offline_args_sign in self.args):
+            return obdiag.analyze_fuction('analyze_log_offline', self.opts)
+        else:
+            return obdiag.analyze_fuction('analyze_log', self.opts)
+
+
 class ObdiagAnalyzeFltTraceCommand(ObdiagOriginCommand):
 
     def __init__(self):
