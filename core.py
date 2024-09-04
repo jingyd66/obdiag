@@ -32,7 +32,7 @@ from config import ConfigManager, InnerConfigManager
 from err import CheckStatus, SUG_SSH_FAILED
 from handler.analyzer.analyze_flt_trace import AnalyzeFltTraceHandler
 from handler.analyzer.analyze_log import AnalyzeLogHandler
-from handler.analyzer.analyze_quene import AnalyzeQueneHandler
+from handler.analyzer.analyze_queue import AnalyzeQueueHandler
 from handler.analyzer.analyze_sql import AnalyzeSQLHandler
 from handler.analyzer.analyze_sql_review import AnalyzeSQLReviewHandler
 from handler.analyzer.analyze_parameter import AnalyzeParameterHandler
@@ -280,9 +280,9 @@ class ObdiagHome(object):
                 self.set_context_skip_cluster_conn(function_type, 'analyze', config)
                 handler = AnalyzeLogHandler(self.context)
                 handler.handle()
-            elif function_type == 'analyze_quene':
+            elif function_type == 'analyze_queue':
                 self.set_context(function_type, 'analyze', config)
-                handler = AnalyzeQueneHandler(self.context)
+                handler = AnalyzeQueueHandler(self.context)
                 handler.handle()
             elif function_type == 'analyze_flt_trace':
                 self.set_context(function_type, 'analyze', config)

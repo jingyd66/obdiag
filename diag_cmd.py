@@ -660,10 +660,10 @@ class ObdiagAnalyzeLogCommand(ObdiagOriginCommand):
             return obdiag.analyze_fuction('analyze_log', self.opts)
 
 
-class ObdiagAnalyzeQueneCommand(ObdiagOriginCommand):
+class ObdiagAnalyzeQueueCommand(ObdiagOriginCommand):
 
     def __init__(self):
-        super(ObdiagAnalyzeQueneCommand, self).__init__('quenue', 'Analyze oceanbase log from online observer machines to registration quenue')
+        super(ObdiagAnalyzeQueueCommand, self).__init__('queue', 'Analyze oceanbase log from online observer machines to registration queue')
         self.parser.add_option('--from', type='string', help="specify the start of the time range. format: 'yyyy-mm-dd hh:mm:ss'")
         self.parser.add_option('--to', type='string', help="specify the end of the time range. format: 'yyyy-mm-dd hh:mm:ss'")
         self.parser.add_option('--files', action="append", type='string', help="specify files")
@@ -671,10 +671,10 @@ class ObdiagAnalyzeQueneCommand(ObdiagOriginCommand):
         self.parser.add_option('-c', type='string', help='obdiag custom config', default=os.path.expanduser('~/.obdiag/config.yml'))
         self.parser.add_option('--since', type='string', help="Specify time range that from 'n' [d]ays, 'n' [h]ours or 'n' [m]inutes. before to now. format: <n> <m|h|d>. example: 1h.", default='30m')
         self.parser.add_option('--tenant', type='string', help="Specify tenantname ")
-        self.parser.add_option('--quenue', type='int', help="quene size ", default=50)
+        self.parser.add_option('--queue', type='int', help="quene size ", default=50)
 
     def init(self, cmd, args):
-        super(ObdiagAnalyzeQueneCommand, self).init(cmd, args)
+        super(ObdiagAnalyzeQueueCommand, self).init(cmd, args)
         self.parser.set_usage('%s [options]' % self.prev_cmd)
         return self
 
@@ -924,7 +924,7 @@ class ObdiagGatherCommand(MajorCommand):
         self.register_command(ObdiagGatherTableDumpHandler())
         self.register_command(ObdiagGatherParameterCommand())
         self.register_command(ObdiagGatherVariableCommand())
-        self.register_command(ObdiagAnalyzeQueneCommand())
+        self.register_command(ObdiagAnalyzeQueueCommand())
 
 
 class ObdiagGatherSceneCommand(MajorCommand):
@@ -945,7 +945,7 @@ class ObdiagAnalyzeCommand(MajorCommand):
         self.register_command(ObdiagAnalyzeSQLReviewCommand())
         self.register_command(ObdiagAnalyzeParameterCommand())
         self.register_command(ObdiagAnalyzeVariableCommand())
-        self.register_command(ObdiagAnalyzeQueneCommand())
+        self.register_command(ObdiagAnalyzeQueueCommand())
 
 
 class ObdiagRCACommand(MajorCommand):
