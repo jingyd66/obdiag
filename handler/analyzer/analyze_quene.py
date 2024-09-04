@@ -20,7 +20,7 @@ import os
 import re
 
 # import tabulate
-import numpy as np
+# import numpy as np
 from common.command import get_observer_version_by_sql
 from handler.base_shell_handler import BaseShellHandler
 from common.obdiag_exception import OBDIAGFormatException
@@ -39,7 +39,8 @@ import common.ssh_client.local_client as ssh_client_local_client
 # from result_type import ObdiagResult
 from common.ob_connector import OBConnector
 import re
-import pandas as pd
+
+# import pandas as pd
 
 
 class AnalyzeQueneHandler(BaseShellHandler):
@@ -106,7 +107,7 @@ class AnalyzeQueneHandler(BaseShellHandler):
             if StringUtils.compare_versions_greater(observer_version, "4.0.0.0"):
                 sql = 'select tenant_id,GROUP_CONCAT(svr_ip ORDER BY svr_ip ) as ip_list from DBA_OB_UNITS where tenant_id=(select tenant_id from DBA_OB_TENANTS where tenant_name="{0}") group by tenant_id'.format(self.tenant)
             else:
-                sql = 'SELECT c.tenant_id,GROUP_CONCAT(DISTINCT b.svr_ip ORDER BY b.svr_ip) AS ip_list FROM __all_resource_pool a JOIN __all_unit b ON a.resource_pool_id = b.resource_pool_id JOIN __all_tenant c ON a.name = c.tenant_name  WHERE a.name ="{0}")'.format(
+                sql = 'SELECT c.tenant_id,GROUP_CONCAT(DISTINCT b.svr_ip ORDER BY b.svr_ip) AS ip_list FROM __all_resource_pool a JOIN __all_unit b ON a.resource_pool_id = b.resource_pool_id JOIN __all_tenant c ON a.tenant_id = c.tenant_id WHERE c.tenant_name ="{0}")'.format(
                     self.tenant
                 )
             sql_result = self.ob_connector.execute_sql_return_cursor_dictionary(sql).fetchall()
