@@ -924,6 +924,7 @@ class ObdiagGatherCommand(MajorCommand):
         self.register_command(ObdiagGatherTableDumpHandler())
         self.register_command(ObdiagGatherParameterCommand())
         self.register_command(ObdiagGatherVariableCommand())
+        self.register_command(ObdiagAnalyzeQueneCommand())
 
 
 class ObdiagGatherSceneCommand(MajorCommand):
@@ -944,6 +945,7 @@ class ObdiagAnalyzeCommand(MajorCommand):
         self.register_command(ObdiagAnalyzeSQLReviewCommand())
         self.register_command(ObdiagAnalyzeParameterCommand())
         self.register_command(ObdiagAnalyzeVariableCommand())
+        self.register_command(ObdiagAnalyzeQueneCommand())
 
 
 class ObdiagRCACommand(MajorCommand):
