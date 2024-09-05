@@ -192,7 +192,8 @@ class AnalyzeQueueHandler(BaseShellHandler):
             for node in self.nodes:
                 handle_from_node(node)
 
-        return analyze_tuples
+        # return analyze_tuples
+        self.stdio.print(analyze_tuples)
         # self.stdio.start_loading('analyze result start')
         # title, field_names, summary_list, summary_details_list = self.__get_overall_summary(analyze_tuples, self.directly_analyze_files)
         # table = tabulate.tabulate(summary_list, headers=field_names, tablefmt="grid", showindex=False)
@@ -257,8 +258,12 @@ class AnalyzeQueueHandler(BaseShellHandler):
         self.stdio.print(node_results)
         count, max_queue_value = self.count_and_find_max_queues(node_results, queue_limit)
         result_dict['tenant_name'] = self.tenant
-        result_dict['over_quene_limit'] = count
-        result_dict['max_quene'] = max_queue_value
+        if max_queue_value > queue_limit:
+            result_dict['is_queue'] = 'yes'
+        else:
+            result_dict['is_queue'] = 'no'
+        result_dict['over_queue_limit'] = count
+        result_dict['max_queue'] = max_queue_value
         return result_dict
 
     def count_and_find_max_queues(data, queue_limit):
