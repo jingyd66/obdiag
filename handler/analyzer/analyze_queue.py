@@ -119,7 +119,7 @@ class AnalyzeQueueHandler(BaseShellHandler):
             self.tenant_id = sql_result["tenant_id"]
             self.ip_list = sql_result["ip_list"]
         self.queue = queue_option
-        self.scope == "observer"
+        self.scope = "observer"
         # if files_option:
         #     self.is_ssh = False
         #     self.directly_analyze_files = True
