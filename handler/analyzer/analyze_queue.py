@@ -117,8 +117,11 @@ class AnalyzeQueueHandler(BaseShellHandler):
                 self.stdio.exception('Error: tenant is {0} not  in this cluster '.format(tenant_option))
                 return False
             self.stdio.verbose("sql_result is {0}".format(sql_result))
-            self.tenant_id = sql_result["tenant_id"]
-            self.ip_list = sql_result["ip_list"]
+            for row in sql_result:
+                self.tenant_id = row["tenant_id"]
+                self.ip_list = row["ip_list"]
+        self.stdio.verbose("tenant_id is {0}".format(self.tenant_id))
+        self.stdio.verbose("ip_list is {0}".format(self.ip_list))
         self.queue = queue_option
         self.scope = "observer"
         # if files_option:
