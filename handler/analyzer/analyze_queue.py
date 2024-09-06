@@ -102,24 +102,26 @@ class AnalyzeQueueHandler(BaseShellHandler):
         files_option = Util.get_option(options, 'files')
         tenant_option = Util.get_option(options, 'tenant')
         queue_option = Util.get_option(options, 'queue')
-        if tenant_option:
-            self.tenant = tenant_option
-            observer_version = self.get_version()
-            if StringUtils.compare_versions_greater(observer_version, "4.0.0.0"):
-                sql = 'select tenant_id,GROUP_CONCAT(svr_ip ORDER BY svr_ip ) as ip_list from DBA_OB_UNITS where tenant_id=(select tenant_id from DBA_OB_TENANTS where tenant_name="{0}") group by tenant_id'.format(self.tenant)
-            else:
-                sql = 'select c.tenant_id,GROUP_CONCAT(DISTINCT b.svr_ip ORDER BY b.svr_ip) AS ip_list FROM __all_resource_pool a JOIN __all_unit b ON a.resource_pool_id = b.resource_pool_id JOIN __all_tenant c ON a.tenant_id = c.tenant_id WHERE c.tenant_name ="{0}")'.format(
-                    self.tenant
-                )
-            self.stdio.verbose("sql is {0}".format(sql))
-            sql_result = self.obconn.execute_sql_return_cursor_dictionary(sql).fetchall()
-            if len(sql_result) <= 0:
-                self.stdio.exception('Error: tenant is {0} not  in this cluster '.format(tenant_option))
-                return False
-            self.stdio.verbose("sql_result is {0}".format(sql_result))
-            for row in sql_result:
-                self.tenant_id = row["tenant_id"]
-                self.ip_list = row["ip_list"]
+        if tenant_option is None:
+            self.stdio.exception('Error: tenant must input ')
+            return False
+        self.tenant = tenant_option
+        observer_version = self.get_version()
+        if StringUtils.compare_versions_greater(observer_version, "4.0.0.0"):
+            sql = 'select tenant_id,GROUP_CONCAT(svr_ip ORDER BY svr_ip ) as ip_list from DBA_OB_UNITS where tenant_id=(select tenant_id from DBA_OB_TENANTS where tenant_name="{0}") group by tenant_id'.format(self.tenant)
+        else:
+            sql = 'select c.tenant_id,GROUP_CONCAT(DISTINCT b.svr_ip ORDER BY b.svr_ip) AS ip_list FROM __all_resource_pool a JOIN __all_unit b ON a.resource_pool_id = b.resource_pool_id JOIN __all_tenant c ON a.tenant_id = c.tenant_id WHERE c.tenant_name ="{0}")'.format(
+                self.tenant
+            )
+        self.stdio.verbose("sql is {0}".format(sql))
+        sql_result = self.obconn.execute_sql_return_cursor_dictionary(sql).fetchall()
+        if len(sql_result) <= 0:
+            self.stdio.exception('Error: tenant is {0} not  in this cluster '.format(tenant_option))
+            return False
+        self.stdio.verbose("sql_result is {0}".format(sql_result))
+        for row in sql_result:
+            self.tenant_id = row["tenant_id"]
+            self.ip_list = row["ip_list"]
         self.stdio.verbose("tenant_id is {0}".format(self.tenant_id))
         self.stdio.verbose("ip_list is {0}".format(self.ip_list))
         self.queue = queue_option
