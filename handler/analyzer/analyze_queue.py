@@ -347,7 +347,10 @@ class AnalyzeQueueHandler(BaseShellHandler):
         log_path = os.path.join(home_path, "log")
         local_store_path = "{0}/{1}".format(local_store_dir, log_name)
         self.stdio.verbose("local_store_path {0}".format(local_store_path))
-        grep_cmd = "grep -e '''dump tenant info(tenant={id:{tenant_id},''' {log_name} >> {local_store_path} ".format(tenant_id=self.tenant_id, log_name=log_name, local_store_path=local_store_path)
+        tenant_id_str = f"tenant={{id:{self.tenant_id}}}"
+        search_pattern = f"'''dump tenant info({tenant_id_str},'''"
+        command = ['grep', '-e', search_pattern, log_name]
+        grep_cmd = ' '.join(command) + f' >> {local_store_path}'
         self.stdio.verbose("grep files, run cmd = [{0}]".format(grep_cmd))
         ssh_client.exec_cmd(grep_cmd)
         log_full_path = "{gather_path}/{log_name}".format(log_name=log_name, gather_path=gather_path)
