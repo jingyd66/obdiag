@@ -346,11 +346,18 @@ class AnalyzeQueueHandler(BaseShellHandler):
         home_path = node.get("home_path")
         log_path = os.path.join(home_path, "log")
         local_store_path = "{0}/{1}".format(local_store_dir, log_name)
+        obs_log_path = "{0}/{1}".format(log_path, log_name)
+        gather_log_path = "{0}/{1}".format(gather_path, log_name)
+        self.stdio.verbose("obs_log_path {0}".format(obs_log_path))
+        self.stdio.verbose("gather_log_path {0}".format(gather_log_path))
         self.stdio.verbose("local_store_path {0}".format(local_store_path))
-        tenant_id_str = f"tenant={{id:{self.tenant_id}}}"
-        search_pattern = f"'''dump tenant info({tenant_id_str},'''"
-        command = ['grep', '-e', search_pattern, log_name]
-        grep_cmd = ' '.join(command) + f' >> {local_store_path}'
+        self.stdio.verbose("log_name {0}".format(log_name))
+        pattern = "dump tenant info(tenant={id:tenant_id,"
+        search_pattern = pattern.replace("{id:tenant_id,", f"{{id:{self.tenant_id},")
+        search_pattern = '"' + search_pattern + '"'
+        self.stdio.verbose("search_pattern = [{0}]".format(search_pattern))
+        command = ['grep', search_pattern, obs_log_path]
+        grep_cmd = ' '.join(command) + f' >> {gather_log_path}'
         self.stdio.verbose("grep files, run cmd = [{0}]".format(grep_cmd))
         ssh_client.exec_cmd(grep_cmd)
         log_full_path = "{gather_path}/{log_name}".format(log_name=log_name, gather_path=gather_path)
