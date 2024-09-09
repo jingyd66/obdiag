@@ -110,7 +110,7 @@ class AnalyzeQueueHandler(BaseShellHandler):
         if StringUtils.compare_versions_greater(observer_version, "4.0.0.0"):
             sql = 'select tenant_id,GROUP_CONCAT(svr_ip ORDER BY svr_ip ) as ip_list from DBA_OB_UNITS where tenant_id=(select tenant_id from DBA_OB_TENANTS where tenant_name="{0}") group by tenant_id'.format(self.tenant)
         else:
-            sql = 'select c.tenant_id,GROUP_CONCAT(DISTINCT b.svr_ip ORDER BY b.svr_ip) AS ip_list FROM __all_resource_pool a JOIN __all_unit b ON a.resource_pool_id = b.resource_pool_id JOIN __all_tenant c ON a.tenant_id = c.tenant_id WHERE c.tenant_name ="{0}")'.format(
+            sql = 'select c.tenant_id,GROUP_CONCAT(DISTINCT b.svr_ip ORDER BY b.svr_ip) AS ip_list FROM __all_resource_pool a JOIN __all_unit b ON a.resource_pool_id = b.resource_pool_id JOIN __all_tenant c ON a.tenant_id = c.tenant_id WHERE c.tenant_name ="{0}"'.format(
                 self.tenant
             )
         self.stdio.verbose("sql is {0}".format(sql))
@@ -275,7 +275,7 @@ class AnalyzeQueueHandler(BaseShellHandler):
         self.stdio.print(result_dict)
         return result_dict
 
-    def count_and_find_max_queues(data, queue_limit):
+    def count_and_find_max_queues(self,data, queue_limit):
         count = 0
         max_queue_value = 0
         for sublist in data:
