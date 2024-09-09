@@ -263,6 +263,8 @@ class AnalyzeQueueHandler(BaseShellHandler):
         ssh_client.ssh_close()
         self.stdio.print(node_results)
         count, max_queue_value = self.count_and_find_max_queues(node_results, queue_limit)
+        self.stdio.print(count)
+        self.stdio.print(max_queue_value)
         result_dict['tenant_name'] = self.tenant
         if max_queue_value > queue_limit:
             result_dict['is_queue'] = 'yes'
