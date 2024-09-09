@@ -316,7 +316,6 @@ class AnalyzeQueueHandler(BaseShellHandler):
         log_path = os.path.join(home_path, "log")
         # self.scope == "observer"
         get_oblog = "ls -1 -F %s/*%s.log* | grep -E 'observer.log(\.[0-9]+){0,1}$' | grep -v 'wf'|awk -F '/' '{print $NF}'" % (log_path, self.scope)
-        self.stdio.print("get_oblog cmd is ", get_oblog)
         # get_oblog = "ls -1 -F %s/*%s.log* | awk -F '/' '{print $NF}'" % (log_path, self.scope)
         log_name_list = []
         log_files = ssh_client.exec_cmd(get_oblog)
