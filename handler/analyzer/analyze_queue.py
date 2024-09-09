@@ -262,7 +262,7 @@ class AnalyzeQueueHandler(BaseShellHandler):
         delete_file(ssh_client, gather_dir_full_path, self.stdio)
         ssh_client.ssh_close()
         self.stdio.print(node_results)
-        count, max_queue_value = self.count_and_find_max_queues(self, node_results, queue_limit)
+        count, max_queue_value = self.count_and_find_max_queues(node_results, queue_limit)
         result_dict['tenant_name'] = self.tenant
         if max_queue_value > queue_limit:
             result_dict['is_queue'] = 'yes'
@@ -270,9 +270,10 @@ class AnalyzeQueueHandler(BaseShellHandler):
             result_dict['is_queue'] = 'no'
         result_dict['over_queue_limit'] = count
         result_dict['max_queue'] = max_queue_value
+        self.stdio.print(result_dict)
         return result_dict
 
-    def count_and_find_max_queues(self, data, queue_limit):
+    def count_and_find_max_queues(data, queue_limit):
         count = 0
         max_queue_value = 0
         for sublist in data:
@@ -316,7 +317,6 @@ class AnalyzeQueueHandler(BaseShellHandler):
         log_path = os.path.join(home_path, "log")
         # self.scope == "observer"
         get_oblog = "ls -1 -F %s/*%s.log* | grep -E 'observer.log(\.[0-9]+){0,1}$' | grep -v 'wf'|awk -F '/' '{print $NF}'" % (log_path, self.scope)
-        self.stdio.print("get_oblog cmd is ", get_oblog)
         # get_oblog = "ls -1 -F %s/*%s.log* | awk -F '/' '{print $NF}'" % (log_path, self.scope)
         log_name_list = []
         log_files = ssh_client.exec_cmd(get_oblog)
