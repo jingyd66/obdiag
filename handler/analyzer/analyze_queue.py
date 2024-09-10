@@ -275,13 +275,13 @@ class AnalyzeQueueHandler(BaseShellHandler):
         self.stdio.print(result_dict)
         return result_dict
 
-    def count_and_find_max_queues(self,data, queue_limit):
+    def count_and_find_max_queues(self, data, queue_limit):
         count = 0
         max_queue_value = 0
         for sublist in data:
             for item in sublist:
                 for key, value in item.items():
-                    if 'queue' in key:  # queue
+                    if 'queue' in key:
                         value = int(value)
                         if value > queue_limit:
                             count += 1
