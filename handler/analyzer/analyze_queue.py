@@ -388,7 +388,6 @@ class AnalyzeQueueHandler(BaseShellHandler):
         with open(file_full_path, 'r', encoding='utf8', errors='ignore') as file:
             for line in file:
                 log_lines.append(line.strip())
-        return log_lines
         # 用于提取所需信息的正则表达式
         pattern_timestamp = r'\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]'
         pattern_req_queue = r'req_queue:total_size=(\d+)'
