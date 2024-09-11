@@ -21,6 +21,7 @@ import re
 
 # import tabulate
 # import numpy as np
+from tabulate import tabulate
 from common.command import get_observer_version_by_sql
 from handler.base_shell_handler import BaseShellHandler
 from common.obdiag_exception import OBDIAGFormatException
@@ -187,7 +188,7 @@ class AnalyzeQueueHandler(BaseShellHandler):
 
         def handle_from_node(node):
             node_results = self.__handle_from_node(node, local_store_parent_dir)
-            analyze_tuples.append((node.get("ip"), False, node_results))
+            analyze_tuples.append((node.get("ip"), node_results))
 
         if self.is_ssh:
             nodes_new = []
@@ -197,28 +198,15 @@ class AnalyzeQueueHandler(BaseShellHandler):
             self.nodes = nodes_new
             for node in self.nodes:
                 handle_from_node(node)
-
-        # return analyze_tuples
         self.stdio.print(analyze_tuples)
-        # self.stdio.start_loading('analyze result start')
-        # title, field_names, summary_list, summary_details_list = self.__get_overall_summary(analyze_tuples, self.directly_analyze_files)
-        # table = tabulate.tabulate(summary_list, headers=field_names, tablefmt="grid", showindex=False)
-        # self.stdio.stop_loading('analyze result sucess')
-        # self.stdio.print(title)
-        # self.stdio.print(table)
-        # FileUtil.write_append(os.path.join(local_store_parent_dir, "result_details.txt"), title + str(table) + "\n\nDetails:\n\n")
-
-        # for m in range(len(summary_details_list)):
-        #     for n in range(len(field_names)):
-        #         extend = "\n\n" if n == len(field_names) - 1 else "\n"
-        #         FileUtil.write_append(os.path.join(local_store_parent_dir, "result_details.txt"), field_names[n] + ": " + str(summary_details_list[m][n]) + extend)
-        # last_info = "For more details, please run cmd \033[32m' cat {0} '\033[0m\n".format(os.path.join(local_store_parent_dir, "result_details.txt"))
-        # self.stdio.print(last_info)
-        # # get info from local_store_parent_dir+/result_details.txt
-        # analyze_info = ""
-        # with open(os.path.join(local_store_parent_dir, "result_details.txt"), "r", encoding="utf-8") as f:
-        #     analyze_info = f.read()
-        # return ObdiagResult(ObdiagResult.SUCCESS_CODE, data={"result": analyze_info})
+        table_data = []
+        headers = ['IP', 'Tenant Name', 'Is Queue', 'Over Queue Limit', 'Max Queue']
+        for ip, info in analyze_tuples:
+            row = [ip, info['tenant_name'], info['is_queue'], info['over_queue_limit'], info['max_queue']]
+            table_data.append(row)
+        queue_result = tabulate(table_data, headers=headers, tablefmt="pretty")
+        self.stdio.print(queue_result)
+        return queue_result
 
     def __handle_from_node(self, node, local_store_parent_dir):
         ssh_client = SshClient(self.context, node)
