@@ -206,7 +206,7 @@ class AnalyzeQueueHandler(BaseShellHandler):
             table_data.append(row)
         queue_result = tabulate(table_data, headers=headers, tablefmt="pretty")
         self.stdio.print(queue_result)
-        FileUtil.write_append(os.path.join(local_store_parent_dir), str(queue_result))
+        FileUtil.write_append(os.path.join(local_store_parent_dir, "result_details.txt"), str(queue_result))
         return queue_result
 
     def __handle_from_node(self, node, local_store_parent_dir):
