@@ -200,12 +200,13 @@ class AnalyzeQueueHandler(BaseShellHandler):
                 handle_from_node(node)
         self.stdio.print(analyze_tuples)
         table_data = []
-        headers = ['IP', 'Tenant Name', 'Is Queue', 'Over Queue Limit', 'Max Queue']
+        headers = ['IP', 'Tenant Name', 'Is Queue', 'Over Queue Limit Count', 'Max Queue']
         for ip, info in analyze_tuples:
             row = [ip, info['tenant_name'], info['is_queue'], info['over_queue_limit'], info['max_queue']]
             table_data.append(row)
         queue_result = tabulate(table_data, headers=headers, tablefmt="pretty")
         self.stdio.print(queue_result)
+        FileUtil.write_append(os.path.join(local_store_parent_dir), str(queue_result))
         return queue_result
 
     def __handle_from_node(self, node, local_store_parent_dir):
