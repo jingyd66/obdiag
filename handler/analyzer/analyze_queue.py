@@ -19,8 +19,6 @@ import datetime
 import os
 import re
 
-# import tabulate
-# import numpy as np
 from tabulate import tabulate
 from common.command import get_observer_version_by_sql
 from handler.base_shell_handler import BaseShellHandler
@@ -37,11 +35,8 @@ from common.tool import FileUtil
 from common.tool import TimeUtils
 import common.ssh_client.local_client as ssh_client_local_client
 
-# from result_type import ObdiagResult
 from common.ob_connector import OBConnector
 import re
-
-# import pandas as pd
 
 
 class AnalyzeQueueHandler(BaseShellHandler):
@@ -290,11 +285,6 @@ class AnalyzeQueueHandler(BaseShellHandler):
         if len(log_list) > self.file_number_limit:
             self.stdio.warn("{0} The number of log files is {1}, out of range (0,{2}]".format(node.get("ip"), len(log_list), self.file_number_limit))
             return log_list
-            # resp["skip"] = (True,)
-            # resp["error"] = "Too many files {0} > {1}, Please adjust the analyze time range".format(len(log_list), self.file_number_limit)
-            # if self.directly_analyze_files:
-            #     # resp["error"] = "Too many files {0} > {1}, " "Please adjust the number of incoming files".format(len(log_list), self.file_number_limit)
-            # return log_list
         elif len(log_list) == 0:
             self.stdio.warn("{0} The number of log files is {1}, No files found, " "Please adjust the query limit".format(node.get("ip"), len(log_list)))
             # resp["skip"] = (True,)
@@ -309,7 +299,6 @@ class AnalyzeQueueHandler(BaseShellHandler):
         """
         home_path = node.get("home_path")
         log_path = os.path.join(home_path, "log")
-        # self.scope == "observer"
         get_oblog = "ls -1 -F %s/*%s.log* | grep -E 'observer.log(\.[0-9]+){0,1}$' | grep -v 'wf'|awk -F '/' '{print $NF}'" % (log_path, self.scope)
         # get_oblog = "ls -1 -F %s/*%s.log* | awk -F '/' '{print $NF}'" % (log_path, self.scope)
         log_name_list = []
@@ -367,7 +356,6 @@ class AnalyzeQueueHandler(BaseShellHandler):
 
         ssh_client = ssh_client_local_client.LocalClient(context=self.context, node={"ssh_type": "local"})
         local_store_path = "{0}/{1}".format(local_store_dir, str(log_name).strip(".").replace("/", "_"))
-        # grep_cmd = "grep -e 'dump tenant info(tenant={id:{tenant_id},' {log_dir}/{log_name} >> {gather_path}/{log_name} ".format(tenant_id=self.tenant_id, gather_path=gather_path, log_name=log_name, log_dir=log_path)
         grep_cmd = "grep -e 'dump tenant info(tenant={id:{tenant_id},' {log_name} >> {local_store_path} ".format(tenant_id=self.tenant_id, log_name=log_name, local_store_path=local_store_path)
         self.stdio.verbose("grep files, run cmd = [{0}]".format(grep_cmd))
         ssh_client.exec_cmd(grep_cmd)
@@ -380,46 +368,40 @@ class AnalyzeQueueHandler(BaseShellHandler):
         with open(file_full_path, 'r', encoding='utf8', errors='ignore') as file:
             for line in file:
                 log_lines.append(line.strip())
-        # 用于提取所需信息的正则表达式
         pattern_timestamp = r'\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+)\]'
         pattern_req_queue = r'req_queue:total_size=(\d+)'
         pattern_multi_level_queue = r'multi_level_queue:total_size=(\d+)'
         pattern_group_id = r'group_id = (\d+),queue_size = (\d+)'
 
-        # 提取所有日志中的 group_id
+        # get group_id
         all_group_ids = set()
         for log in log_lines:
             matches = re.findall(pattern_group_id, log)
             for match in matches:
                 all_group_ids.add(int(match[0]))
 
-        # 初始化结果字典，包含固定列和可能的 group_id 列
         results = []
         group_id_columns = {f'group_id_{gid}_queue_size': 'NA' for gid in all_group_ids}
 
-        # 遍历日志条目
         for log in log_lines:
             timestamp = re.search(pattern_timestamp, log).group(1)
             req_queue_size = re.search(pattern_req_queue, log).group(1) if re.search(pattern_req_queue, log) else 'NA'
             multi_level_queue_size = re.search(pattern_multi_level_queue, log).group(1) if re.search(pattern_multi_level_queue, log) else 'NA'
 
-            # 初始化 group_id 相关的字典
             group_info = {}
             matches = re.findall(pattern_group_id, log)
             for match in matches:
                 group_id, queue_size = match
                 group_info[f'group_id_{group_id}_queue_size'] = queue_size
 
-            # 合并固定信息和 group_id 信息
             result = {
                 'timestamp': timestamp,
                 'req_queue_total_size': req_queue_size,
                 'multi_level_queue_total_size': multi_level_queue_size,
-                **group_info,  # 使用 ** 运算符将字典解包为关键字参数
-                **{k: 'NA' for k in group_id_columns if k not in group_info},  # 填充缺失的 group_id 列
+                **group_info,
+                **{k: 'NA' for k in group_id_columns if k not in group_info},
             }
 
-            # 添加到结果列表
             results.append(result)
         return results
 
