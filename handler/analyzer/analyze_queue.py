@@ -200,9 +200,9 @@ class AnalyzeQueueHandler(BaseShellHandler):
                 handle_from_node(node)
         self.stdio.print(analyze_tuples)
         table_data = []
-        headers = ['IP', 'Tenant Name', 'Is Queue', 'Over Queue Limit Count', 'Max Queue']
+        headers = ['IP', 'Tenant Name', 'From_TimeStamp', 'To_TimeStamp', 'Is Queue', 'Over Queue Limit Count', 'Max Queue']
         for ip, info in analyze_tuples:
-            row = [ip, info['tenant_name'], info['is_queue'], info['over_queue_limit'], info['max_queue']]
+            row = [ip, info['tenant_name'], info['from_datetime_timestamp'], info['to_datetime_timestamp'], info['is_queue'], info['over_queue_limit'], info['max_queue']]
             table_data.append(row)
         queue_result = tabulate(table_data, headers=headers, tablefmt="pretty")
         self.stdio.print(queue_result)
@@ -261,6 +261,8 @@ class AnalyzeQueueHandler(BaseShellHandler):
             result_dict['is_queue'] = 'no'
         result_dict['over_queue_limit'] = count
         result_dict['max_queue'] = max_queue_value
+        result_dict['from_datetime_timestamp'] = from_datetime_timestamp
+        result_dict['to_datetime_timestamp'] = to_datetime_timestamp
         self.stdio.print(result_dict)
         return result_dict
 
